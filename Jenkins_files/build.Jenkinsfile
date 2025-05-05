@@ -1,15 +1,31 @@
-node {
-    stage('Build Frontend Image') {
-        dir('frontend') {
-            echo "Building frontend image..."
-            bat 'docker build -t dockerhub-creds/student-frontend:latest .'
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout Code') {
+            steps {
+                echo 'Checking out source code...'
+                checkout scm
+            }
         }
+
+        stage('Build Frontend Image') {
+            steps {
+                dir('frontend') {
+                    echo 'Building frontend Docker image...'
+                    bat 'docker build -t dockerhub-creds/student-frontend:latest .'
+                }
+            }
+        }
+
     }
 
-    stage('Build Backend Image') {
-        dir('backend') {
-            echo "Building backend image..."
-            bat 'docker build -t dockerhub-creds/student-backend:latest .'
+    post {
+        success {
+            echo 'Build completed successfully.'
+        }
+        failure {
+            echo 'Build failed.'
         }
     }
 }
