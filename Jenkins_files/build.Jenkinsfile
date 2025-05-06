@@ -1,4 +1,4 @@
-pipeline {
+pipeline { 
     agent any
 
     stages {
@@ -6,6 +6,20 @@ pipeline {
             steps {
                 echo 'Checking out source code...'
                 checkout scm
+            }
+        }
+
+        stage('Prepare Frontend') {
+            steps {
+                echo 'Installing frontend dependencies using Node.js Docker container...'
+                script {
+                    docker.image('node:18').inside {
+                        dir('frontend') {
+                            bat 'npm install'
+                            bat 'npm run build'  
+                        }
+                    }
+                }
             }
         }
 
@@ -17,7 +31,6 @@ pipeline {
                 }
             }
         }
-
     }
 
     post {
