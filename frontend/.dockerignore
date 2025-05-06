@@ -1,7 +1,5 @@
 node_modules
-npm-debug.log
 frontend/node_modules
 npm-debug.log
-frontend/Dockerfile
-.dockerignore
+frontend/npm-debug.log
 .git
