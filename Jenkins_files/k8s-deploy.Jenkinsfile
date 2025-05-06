@@ -47,8 +47,8 @@ spec:
 '''
 
                     // Apply to Kubernetes
-                    sh 'kubectl apply -f frontend-deployment.yaml'
-                    sh 'kubectl apply -f frontend-service.yaml'
+                    bat 'kubectl apply -f frontend-deployment.yaml'
+                    bat 'kubectl apply -f frontend-service.yaml'
                 }
             }
         }
