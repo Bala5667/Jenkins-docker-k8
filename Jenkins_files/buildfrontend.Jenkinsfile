@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = 'dockerhub-creds/student-frontend'
+        IMAGE_NAME = 'balaji5667/student-frontend'
         IMAGE_TAG = 'latest'
     }
 
