@@ -22,22 +22,14 @@ pipeline {
                 """
             }
         }
-
-        stage('Push to Docker Hub') {
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                    bat """
-                    echo %PASSWORD% | docker login -u %USERNAME% --password-stdin
-                    docker push %IMAGE_NAME%:%IMAGE_TAG%
-                    """
-                }
-            }
-        }
     }
 
     post {
         failure {
             echo 'Build failed.'
+        }
+        success {
+            echo 'Docker image built successfully.'
         }
     }
 }
