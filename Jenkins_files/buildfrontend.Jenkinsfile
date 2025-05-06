@@ -14,29 +14,12 @@ pipeline {
             }
         }
 
-        stage('Prepare Frontend') {
+        stage('Build Docker Image') {
             steps {
-                echo 'Installing frontend dependencies using Docker container...'
+                echo 'Building Docker image from frontend Dockerfile...'
                 bat """
-                docker pull node:18
-                docker run --rm -v %CD%/frontend:/app -w /app node:18 npm install
+                docker build -t %IMAGE_NAME%:%IMAGE_TAG% frontend
                 """
-            }
-        }
-
-        stage('Build Frontend') {
-            steps {
-                echo 'Building frontend app...'
-                bat """
-                docker run --rm -v %CD%/frontend:/app -w /app node:18 npm run build
-                """
-            }
-        }
-
-        stage('Build Frontend Image') {
-            steps {
-                echo 'Building Docker image for frontend...'
-                bat "docker build -t %IMAGE_NAME%:%IMAGE_TAG% -f frontend/Dockerfile ."
             }
         }
 
