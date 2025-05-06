@@ -1,4 +1,4 @@
-pipeline {
+pipeline { 
     agent any
 
     environment {
@@ -19,7 +19,7 @@ pipeline {
                 echo 'Installing frontend dependencies using Docker container...'
                 bat """
                 docker pull node:18
-                docker run --rm -v %CD%:/app -w /app node:18 cmd /c "npm install"
+                docker run --rm -v %CD%:/app -w /app node:18 npm install
                 """
             }
         }
@@ -28,7 +28,7 @@ pipeline {
             steps {
                 echo 'Building frontend app...'
                 bat """
-                docker run --rm -v %CD%:/app -w /app node:18 cmd /c "npm run build"
+                docker run --rm -v %CD%:/app -w /app node:18 npm run build
                 """
             }
         }
