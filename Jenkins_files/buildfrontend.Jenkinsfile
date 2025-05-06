@@ -1,5 +1,10 @@
-pipeline { 
+pipeline {
     agent any
+
+    environment {
+        IMAGE_NAME = 'dockerhub-creds/student-frontend'
+        IMAGE_TAG = 'latest'
+    }
 
     stages {
         stage('Checkout Code') {
@@ -11,32 +16,43 @@ pipeline {
 
         stage('Prepare Frontend') {
             steps {
-                echo 'Installing frontend dependencies using Node.js Docker container...'
-                script {
-                    docker.image('node:18').inside {
-                        dir('frontend') {
-                            bat 'npm install'
-                            bat 'npm run build'  
-                        }
-                    }
-                }
+                echo 'Installing frontend dependencies using Docker container...'
+                bat """
+                docker pull node:18
+                docker run --rm -v %CD%:/app -w /app node:18 cmd /c "npm install"
+                """
+            }
+        }
+
+        stage('Build Frontend') {
+            steps {
+                echo 'Building frontend app...'
+                bat """
+                docker run --rm -v %CD%:/app -w /app node:18 cmd /c "npm run build"
+                """
             }
         }
 
         stage('Build Frontend Image') {
             steps {
-                dir('frontend') {
-                    echo 'Building frontend Docker image...'
-                    bat 'docker build -t dockerhub-creds/student-frontend:latest .'
+                echo 'Building Docker image for frontend...'
+                bat "docker build -t %IMAGE_NAME%:%IMAGE_TAG% -f frontend.Dockerfile ."
+            }
+        }
+
+        stage('Push to Docker Hub') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                    bat """
+                    echo %PASSWORD% | docker login -u %USERNAME% --password-stdin
+                    docker push %IMAGE_NAME%:%IMAGE_TAG%
+                    """
                 }
             }
         }
     }
 
     post {
-        success {
-            echo 'Build completed successfully.'
-        }
         failure {
             echo 'Build failed.'
         }
