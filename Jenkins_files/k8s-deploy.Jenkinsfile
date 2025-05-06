@@ -1,23 +1,65 @@
 pipeline {
     agent any
 
+    environment {
+        KUBECONFIG = "/home/jenkins/.kube/config" // Adjust this path if needed
+    }
+
     stages {
-        stage('Deploy to Kubernetes') {
+        stage('Deploy Frontend to Kubernetes') {
             steps {
-                echo "📦 Applying Kubernetes Manifests..."
+                script {
+                    echo "🚀 Deploying frontend Docker image to Kubernetes..."
 
-                sh '''
-                kubectl apply -f k8s/configmap.yaml
-                kubectl apply -f k8s/mysql-pvc.yaml
-                kubectl apply -f k8s/mysql-deployment.yaml
-                kubectl apply -f k8s/backend-deployment.yaml
-                kubectl apply -f k8s/frontend-deployment.yaml
-                kubectl apply -f k8s/ingress.yaml || true
+                    // Create deployment YAML dynamically (optional)
+                    sh '''
+                    cat <<EOF > frontend-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+        - name: frontend
+          image: balaji5667/student-frontend:latest
+          ports:
+            - containerPort: 3000
+EOF
+                    '''
 
-                echo "🔁 Restarting deployments to pull latest images..."
-                kubectl rollout restart deployment backend-deployment
-                kubectl rollout restart deployment frontend-deployment
-                '''
+                    // Create service YAML
+                    sh '''
+                    cat <<EOF > frontend-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-service
+spec:
+  selector:
+    app: frontend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+  type: NodePort
+EOF
+                    '''
+
+                    // Apply Kubernetes manifests
+                    sh '''
+                    kubectl apply -f frontend-deployment.yaml
+                    kubectl apply -f frontend-service.yaml
+                    '''
+                }
             }
         }
     }
