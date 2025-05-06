@@ -1,21 +1,30 @@
 pipeline {
     agent any
 
+    environment {
+        IMAGE_NAME = 'balaji5667/student-frontend'
+        IMAGE_TAG = 'latest'
+    }
+
     stages {
-        stage('Login to Docker Hub') {
+        stage('Push to Docker Hub') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    sh 'echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin'
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                    bat """
+                    echo %PASSWORD% | docker login -u %USERNAME% --password-stdin
+                    docker push %IMAGE_NAME%:%IMAGE_TAG%
+                    """
                 }
             }
         }
+    }
 
-        stage('Push Docker Images') {
-            steps {
-                echo "📤 Pushing images to Docker Hub..."
-                sh 'docker push $DOCKER_USER/student-frontend:latest'
-                sh 'docker push $DOCKER_USER/student-backend:latest'
-            }
+    post {
+        failure {
+            echo 'Push failed.'
+        }
+        success {
+            echo 'Image pushed to Docker Hub successfully.'
         }
     }
 }
