@@ -1,23 +1,24 @@
-# 🎓 Student Management System
+This project demonstrates a full CI/CD pipeline for deploying a React.js application using:
 
-A full-stack project using React, Node.js, MySQL, Docker, Kubernetes, and Jenkins.
+Jenkins for CI/CD automation
 
-## 🚀 Features
-- React frontend UI
-- Node.js Express backend API
-- MySQL for data persistence
-- Dockerized microservices
-- Kubernetes deployments (with optional Ingress)
-- CI/CD pipeline with Jenkins
+Docker for containerizing the app
 
-## 🧪 Technologies Used
-- React, Node.js, Express, MySQL
-- Docker, Docker Hub
-- Kubernetes
-- Jenkins CI/CD
+Docker Hub for image storage
 
-## ⚙️ Deployment
+Kubernetes (Minikube) for orchestrating the deployment
 
-### Run manually:
-```bash
-kubectl apply -f k8s/
+NodePort Service for exposing the application
+
+🔧 Technologies Used
+React.js
+
+Jenkins
+
+Docker & Docker Hub
+
+Kubernetes (Minikube)
+
+YAML (K8s manifests)
+
+GitHub (source control)
